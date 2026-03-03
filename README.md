@@ -253,4 +253,4 @@ This is a significant rewrite and not recommended for this project.
 
 ---
 
-*Group: [Your Group Number] | CPEN 412, 2026*
+*Group: 17, Hayet and Nhyira | CPEN 412, 2026*
