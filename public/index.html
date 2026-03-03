@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UG Campus Facility Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0b1f3a;--navy2:#122848;--navy3:#1a3660;
+  --gold:#c9a84c;--gold2:#e8c96a;--gold3:#f5e4a8;
+  --cream:#f5f0e8;--white:#ffffff;
+  --gray:#8a9ab5;--gray2:#dde3ef;
+  --light:#eef2f8;
+  --green:#2e7d52;--green-bg:rgba(46,125,82,.1);
+  --red:#b5373a;--red-bg:rgba(181,55,58,.1);
+  --orange:#c97a2a;--orange-bg:rgba(201,122,42,.1);
+  --shadow:0 4px 24px rgba(11,31,58,.12);
+  --shadow-lg:0 12px 48px rgba(11,31,58,.2);
+  --radius:14px;--radius-sm:9px;
+  --tr:.2s ease;
+  --font-serif:'Cormorant Garamond',Georgia,serif;
+  --font-sans:'DM Sans',system-ui,sans-serif;
+}
+body{font-family:var(--font-sans);background:var(--cream);color:var(--navy);min-height:100vh;line-height:1.6}
+
+/* ── AUTH SCREENS ─────────────────────────────────────────────────────── */
+#auth-shell{
+  display:flex;min-height:100vh;
+}
+#auth-shell.hidden{display:none}
+
+.auth-panel-left{
+  flex:1;background:var(--navy);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:3rem;position:relative;overflow:hidden;
+}
+.auth-panel-left::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 30%, rgba(201,168,76,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 70%, rgba(18,40,72,.9) 0%, transparent 70%);
+  pointer-events:none;
+}
+.auth-panel-left::after{
+  content:'';position:absolute;
+  width:500px;height:500px;border-radius:50%;
+  border:1px solid rgba(201,168,76,.1);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+}
+.auth-brand{position:relative;z-index:1;text-align:center;color:var(--white)}
+.auth-brand-logo{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;margin:0 auto 1.5rem;
+  box-shadow:0 0 40px rgba(201,168,76,.35);
+}
+.auth-brand h1{
+  font-family:var(--font-serif);font-size:2.2rem;font-weight:700;
+  letter-spacing:.02em;line-height:1.2;margin-bottom:.5rem;
+}
+.auth-brand p{color:rgba(255,255,255,.5);font-size:.9rem;letter-spacing:.05em;text-transform:uppercase}
+.auth-tagline{
+  position:relative;z-index:1;margin-top:3rem;color:rgba(255,255,255,.35);
+  font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;text-align:center;
+}
+.auth-decorative{
+  position:absolute;bottom:-40px;right:-40px;
+  width:280px;height:280px;border-radius:50%;
+  border:1px solid rgba(201,168,76,.08);z-index:0;
+}
+.auth-decorative-2{
+  position:absolute;top:-60px;left:-60px;
+  width:200px;height:200px;border-radius:50%;
+  border:1px solid rgba(201,168,76,.06);z-index:0;
+}
+
+.auth-panel-right{
+  width:480px;display:flex;align-items:center;justify-content:center;
+  padding:2.5rem;background:var(--white);
+}
+.auth-form-wrap{width:100%;max-width:380px}
+.auth-form-title{
+  font-family:var(--font-serif);font-size:2rem;font-weight:700;
+  color:var(--navy);margin-bottom:.4rem;
+}
+.auth-form-sub{color:var(--gray);font-size:.88rem;margin-bottom:2rem}
+
+.field{margin-bottom:1.25rem}
+.field label{display:block;font-size:.8rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--navy2);margin-bottom:.4rem}
+.field input,.field select{
+  width:100%;padding:.75rem 1rem;
+  border:1.5px solid var(--gray2);border-radius:var(--radius-sm);
+  font-family:var(--font-sans);font-size:.9rem;color:var(--navy);
+  background:var(--white);outline:none;transition:border-color var(--tr),box-shadow var(--tr);
+}
+.field input:focus,.field select:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(201,168,76,.12);
+}
+.field input::placeholder{color:var(--gray)}
+
+.input-icon-wrap{position:relative}
+.input-icon-wrap input{padding-left:2.6rem}
+.input-icon{
+  position:absolute;left:.85rem;top:50%;transform:translateY(-50%);
+  color:var(--gray);font-size:1rem;pointer-events:none;
+}
+.pw-toggle{
+  position:absolute;right:.85rem;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--gray);cursor:pointer;font-size:.85rem;
+  padding:0;transition:color var(--tr);
+}
+.pw-toggle:hover{color:var(--navy)}
+
+.btn-auth{
+  width:100%;padding:.85rem;
+  background:linear-gradient(135deg,var(--navy),var(--navy3));
+  color:var(--white);border:none;border-radius:var(--radius-sm);
+  font-family:var(--font-sans);font-size:.95rem;font-weight:600;
+  cursor:pointer;transition:opacity var(--tr),transform var(--tr),box-shadow var(--tr);
+  letter-spacing:.02em;margin-top:.5rem;
+  box-shadow:0 4px 16px rgba(11,31,58,.25);
+}
+.btn-auth:hover{opacity:.92;transform:translateY(-1px);box-shadow:0 8px 24px rgba(11,31,58,.3)}
+.btn-auth:active{transform:translateY(0)}
+.btn-auth:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.auth-divider{
+  display:flex;align-items:center;gap:.75rem;
+  margin:1.25rem 0;color:var(--gray);font-size:.8rem;
+}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--gray2)}
+
+.auth-switch{text-align:center;font-size:.85rem;color:var(--gray);margin-top:1.25rem}
+.auth-switch a{color:var(--gold);font-weight:600;cursor:pointer;text-decoration:none;transition:color var(--tr)}
+.auth-switch a:hover{color:var(--navy)}
+
+.auth-error{
+  background:var(--red-bg);border:1px solid rgba(181,55,58,.25);
+  color:var(--red);border-radius:var(--radius-sm);
+  padding:.7rem 1rem;font-size:.85rem;margin-bottom:1rem;
+  display:none;
+}
+.auth-error.visible{display:block}
+.auth-success{
+  background:var(--green-bg);border:1px solid rgba(46,125,82,.25);
+  color:var(--green);border-radius:var(--radius-sm);
+  padding:.7rem 1rem;font-size:.85rem;margin-bottom:1rem;
+  display:none;
+}
+.auth-success.visible{display:block}
+
+.role-pills{display:flex;gap:.5rem;margin-top:.35rem}
+.role-pill{
+  flex:1;padding:.5rem;border:1.5px solid var(--gray2);border-radius:var(--radius-sm);
+  font-size:.8rem;font-weight:600;text-align:center;cursor:pointer;
+  color:var(--gray);transition:all var(--tr);background:var(--white);
+}
+.role-pill.active{border-color:var(--gold);background:rgba(201,168,76,.1);color:var(--navy)}
+
+.demo-hint{
+  background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);
+  border-radius:var(--radius-sm);padding:.65rem 1rem;
+  font-size:.78rem;color:var(--navy2);margin-bottom:1.25rem;line-height:1.5;
+}
+.demo-hint strong{color:var(--gold);}
+
+/* ── MAIN APP ─────────────────────────────────────────────────────────── */
+#app-shell{display:none;flex-direction:column;min-height:100vh}
+#app-shell.visible{display:flex}
+
+.topbar{
+  background:var(--navy);color:var(--white);
+  padding:0 2rem;display:flex;align-items:center;
+  justify-content:space-between;height:64px;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 20px rgba(0,0,0,.25);
+}
+.topbar-brand{display:flex;align-items:center;gap:.75rem}
+.topbar-logo{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+}
+.topbar-title{font-family:var(--font-serif);font-size:1.15rem;letter-spacing:.02em}
+.topbar-sub{font-size:.68rem;color:var(--gray);letter-spacing:.07em;text-transform:uppercase}
+
+.topbar-right{display:flex;align-items:center;gap:1rem}
+.user-chip{
+  display:flex;align-items:center;gap:.6rem;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
+  border-radius:100px;padding:.3rem .75rem .3rem .3rem;
+  font-size:.82rem;color:var(--white);
+}
+.user-avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:700;color:var(--navy);text-transform:uppercase;
+}
+.user-chip-name{font-weight:500;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge-role{
+  font-size:.65rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  padding:.15rem .45rem;border-radius:100px;
+}
+.badge-role.student{background:rgba(46,125,82,.25);color:#6fcf97}
+.badge-role.staff  {background:rgba(201,168,76,.2);color:var(--gold2)}
+.badge-role.admin  {background:rgba(181,55,58,.2);color:#e07070}
+
+.btn-logout{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  color:rgba(255,255,255,.65);border-radius:var(--radius-sm);
+  padding:.35rem .8rem;font-size:.8rem;cursor:pointer;
+  transition:all var(--tr);font-family:var(--font-sans);
+}
+.btn-logout:hover{background:rgba(255,255,255,.15);color:var(--white)}
+
+.nav{
+  background:var(--white);border-bottom:1px solid var(--gray2);
+  padding:0 2rem;display:flex;gap:0;overflow-x:auto;
+}
+.nav-tab{
+  padding:.85rem 1.1rem;border:none;background:none;
+  font-family:var(--font-sans);font-size:.85rem;font-weight:500;
+  color:var(--gray);cursor:pointer;border-bottom:2.5px solid transparent;
+  transition:all var(--tr);white-space:nowrap;
+}
+.nav-tab:hover{color:var(--navy)}
+.nav-tab.active{color:var(--navy);border-bottom-color:var(--gold);font-weight:600}
+
+.main{flex:1;max-width:1200px;width:100%;margin:0 auto;padding:2rem}
+.page{display:none}
+.page.active{display:block}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{
+  background:var(--white);border-radius:var(--radius);padding:1.25rem 1.5rem;
+  border-left:3px solid var(--gold);box-shadow:var(--shadow);
+}
+.stat-value{font-family:var(--font-serif);font-size:2.2rem;font-weight:700;color:var(--navy);line-height:1}
+.stat-label{font-size:.75rem;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;margin-top:.3rem}
+
+/* ── CARDS ── */
+.section-title{
+  font-family:var(--font-serif);font-size:1.5rem;font-weight:700;
+  color:var(--navy);margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;
+}
+.section-title::after{content:'';flex:1;height:1px;background:var(--gray2);max-width:200px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem}
+.card{
+  background:var(--white);border-radius:var(--radius);
+  box-shadow:var(--shadow);overflow:hidden;
+  transition:transform var(--tr),box-shadow var(--tr);
+}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.card-banner{height:6px;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.card-body{padding:1.25rem 1.25rem .75rem}
+.card-icon{font-size:2rem;margin-bottom:.5rem}
+.card-title{font-family:var(--font-serif);font-size:1.15rem;font-weight:600;color:var(--navy)}
+.card-sub{color:var(--gray);font-size:.82rem;margin-top:.2rem}
+.card-meta{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.75rem}
+.tag{background:var(--light);color:var(--navy2);font-size:.75rem;padding:.25rem .6rem;border-radius:100px;font-weight:500}
+.tag.gold{background:rgba(201,168,76,.12);color:var(--gold)}
+.card-actions{padding:.75rem 1.25rem 1.25rem;display:flex;gap:.6rem}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:var(--radius-sm);font-family:var(--font-sans);font-size:.85rem;font-weight:600;cursor:pointer;transition:all var(--tr);border:none;text-decoration:none}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-gold:hover{background:var(--gold2)}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--gray2)}
+.btn-outline:hover{border-color:var(--navy);background:var(--light)}
+.btn-danger{background:transparent;color:var(--red);border:1.5px solid rgba(181,55,58,.25)}
+.btn-danger:hover{background:var(--red-bg);border-color:var(--red)}
+.btn-sm{padding:.35rem .75rem;font-size:.78rem}
+.btn-primary{background:var(--navy);color:var(--white)}
+.btn-primary:hover{background:var(--navy2)}
+
+/* ── AVAILABILITY ── */
+.avail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.6rem}
+.slot{
+  border-radius:var(--radius-sm);padding:.6rem .5rem;text-align:center;
+  font-size:.8rem;font-weight:500;transition:all var(--tr);
+}
+.slot.available{background:rgba(46,125,82,.1);border:1px solid rgba(46,125,82,.3);color:var(--green);cursor:pointer}
+.slot.available:hover{background:rgba(46,125,82,.2);transform:translateY(-1px)}
+.slot.booked{background:rgba(181,55,58,.08);border:1px solid rgba(181,55,58,.2);color:var(--red);cursor:default}
+.slot.selected{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:700}
+
+.summary-bar{
+  display:flex;gap:1.5rem;background:var(--light);
+  border-radius:var(--radius-sm);padding:.75rem 1rem;margin-bottom:1rem;font-size:.85rem;
+}
+.summary-bar span{font-weight:700;color:var(--navy)}
+.avail-legend{display:flex;gap:1rem;font-size:.78rem;color:var(--gray);margin-bottom:.5rem}
+.legend-dot{width:12px;height:12px;border-radius:3px;display:inline-block;margin-right:.3rem;vertical-align:middle}
+
+/* ── FORMS ── */
+.form-card{background:var(--white);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--navy2);margin-bottom:.4rem}
+.form-group input,.form-group select{
+  width:100%;padding:.65rem .9rem;
+  border:1.5px solid var(--gray2);border-radius:var(--radius-sm);
+  font-family:var(--font-sans);font-size:.88rem;color:var(--navy);
+  background:var(--white);outline:none;transition:border-color var(--tr),box-shadow var(--tr);
+}
+.form-group input:focus,.form-group select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.12)}
+.form-group input[readonly]{background:var(--light);color:var(--gray);cursor:not-allowed}
+
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse;background:var(--white)}
+thead tr{background:var(--navy);color:var(--white)}
+th{padding:.85rem 1rem;text-align:left;font-size:.78rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+td{padding:.85rem 1rem;font-size:.85rem;border-bottom:1px solid var(--gray2)}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--light)}
+
+/* ── BADGES ── */
+.badge{font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:.25rem .6rem;border-radius:100px}
+.badge-confirmed{background:var(--green-bg);color:var(--green)}
+.badge-pending{background:var(--orange-bg);color:var(--orange)}
+.badge-cancelled{background:rgba(138,154,181,.12);color:var(--gray)}
+
+/* ── MODAL ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(11,31,58,.55);backdrop-filter:blur(4px);
+  z-index:200;align-items:center;justify-content:center;
+}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:var(--radius);padding:2rem;width:100%;max-width:480px;box-shadow:var(--shadow-lg)}
+.modal-title{font-family:var(--font-serif);font-size:1.4rem;font-weight:700;color:var(--navy);margin-bottom:1.25rem}
+.modal-actions{display:flex;justify-content:flex-end;gap:.75rem;margin-top:1.5rem}
+
+/* ── TOAST ── */
+#toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;display:flex;flex-direction:column;gap:.5rem}
+.toast{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.75rem 1.1rem;border-radius:var(--radius-sm);
+  background:var(--navy);color:var(--white);
+  font-size:.85rem;box-shadow:var(--shadow-lg);
+  animation:slideIn .3s ease;min-width:240px;max-width:340px;
+}
+.toast.success{background:var(--green)}
+.toast.error{background:var(--red)}
+.toast.info{background:var(--navy)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ── MISC ── */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--gray)}
+.empty-state p{font-size:.95rem}
+.loading{text-align:center;padding:2rem;color:var(--gray);font-size:.9rem}
+.search-bar{padding:.6rem 1rem;border:1.5px solid var(--gray2);border-radius:var(--radius-sm);font-family:var(--font-sans);font-size:.88rem;outline:none;width:280px;transition:border-color var(--tr)}
+.search-bar:focus{border-color:var(--gold)}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+
+@media(max-width:640px){
+  .auth-panel-left{display:none}
+  .auth-panel-right{width:100%;padding:2rem 1.5rem}
+  .main{padding:1.25rem}
+  .form-row{grid-template-columns:1fr}
+  .topbar{padding:0 1rem}
+  .nav{padding:0 1rem}
+  .stats-row{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     AUTH SHELL
+═══════════════════════════════════════════════════════════════════════ -->
+<div id="auth-shell">
+
+  <!-- Left decorative panel -->
+  <div class="auth-panel-left">
+    <div class="auth-decorative"></div>
+    <div class="auth-decorative-2"></div>
+    <div class="auth-brand">
+      <div class="auth-brand-logo">🏛</div>
+      <h1>Campus Facility<br>Booking System</h1>
+      <p>University of Ghana</p>
+    </div>
+    <div class="auth-tagline">Reserve · Manage · Collaborate</div>
+  </div>
+
+  <!-- Right form panel -->
+  <div class="auth-panel-right">
+
+    <!-- LOGIN FORM -->
+    <div class="auth-form-wrap" id="login-form">
+      <div class="auth-form-title">Welcome back</div>
+      <div class="auth-form-sub">Sign in to your UG account to continue</div>
+
+      <div class="demo-hint">
+        <strong>Demo accounts:</strong><br>
+        kwame.mensah@ug.edu.gh / student123<br>
+        kofi.boateng@ug.edu.gh / admin123
+      </div>
+
+      <div class="auth-error" id="login-error"></div>
+
+      <div class="field">
+        <label>Email address</label>
+        <div class="input-icon-wrap">
+          <span class="input-icon">✉</span>
+          <input type="email" id="login-email" placeholder="you@ug.edu.gh" autocomplete="email"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="input-icon-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="login-password" placeholder="Enter your password" autocomplete="current-password"/>
+          <button class="pw-toggle" type="button" onclick="togglePw('login-password',this)">Show</button>
+        </div>
+      </div>
+
+      <button class="btn-auth" id="login-btn" onclick="doLogin()">Sign In</button>
+
+      <div class="auth-divider">or</div>
+      <div class="auth-switch">Don't have an account? <a onclick="showAuthPage('signup')">Create one →</a></div>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div class="auth-form-wrap" id="signup-form" style="display:none">
+      <div class="auth-form-title">Create account</div>
+      <div class="auth-form-sub">Join UG Campus Booking in seconds</div>
+
+      <div class="auth-error"   id="signup-error"></div>
+      <div class="auth-success" id="signup-success"></div>
+
+      <div class="field">
+        <label>Full name</label>
+        <div class="input-icon-wrap">
+          <span class="input-icon">👤</span>
+          <input type="text" id="signup-name" placeholder="e.g. Kwame Mensah"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Email address</label>
+        <div class="input-icon-wrap">
+          <span class="input-icon">✉</span>
+          <input type="email" id="signup-email" placeholder="you@ug.edu.gh"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="input-icon-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="signup-password" placeholder="At least 6 characters"/>
+          <button class="pw-toggle" type="button" onclick="togglePw('signup-password',this)">Show</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Confirm password</label>
+        <div class="input-icon-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="signup-confirm" placeholder="Re-enter your password"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>I am a…</label>
+        <div class="role-pills">
+          <div class="role-pill active" data-role="student" onclick="selectRole(this)">🎓 Student</div>
+          <div class="role-pill" data-role="staff"   onclick="selectRole(this)">👔 Staff</div>
+          <div class="role-pill" data-role="admin"   onclick="selectRole(this)">🛡 Admin</div>
+        </div>
+        <input type="hidden" id="signup-role" value="student"/>
+      </div>
+
+      <button class="btn-auth" id="signup-btn" onclick="doSignup()">Create Account</button>
+
+      <div class="auth-divider">or</div>
+      <div class="auth-switch">Already have an account? <a onclick="showAuthPage('login')">Sign in →</a></div>
+    </div>
+
+  </div><!-- end auth-panel-right -->
+</div><!-- end auth-shell -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     APP SHELL (shown after login)
+═══════════════════════════════════════════════════════════════════════ -->
+<div id="app-shell">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo">🏛</div>
+      <div>
+        <div class="topbar-title">UG Campus Booking</div>
+        <div class="topbar-sub">Facility Management System</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar-initials">?</div>
+        <div>
+          <div class="user-chip-name" id="user-chip-name">–</div>
+          <div><span class="badge-role student" id="user-chip-role">student</span></div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <button class="nav-tab active" onclick="showPage('facilities')">🏢 Facilities</button>
+    <button class="nav-tab" onclick="showPage('availability')">📅 Availability</button>
+    <button class="nav-tab" onclick="showPage('bookings')">📋 My Bookings</button>
+    <button class="nav-tab" id="tab-all-bookings" onclick="showPage('all-bookings')">📊 All Bookings</button>
+    <button class="nav-tab" onclick="showPage('new-booking')">➕ New Booking</button>
+  </nav>
+
+  <!-- Pages -->
+  <main class="main">
+
+    <!-- Facilities -->
+    <section id="page-facilities" class="page active">
+      <div id="stats-row" class="stats-row"></div>
+      <div class="section-title">Available Facilities</div>
+      <div class="grid" id="facilities-grid"></div>
+    </section>
+
+    <!-- Availability -->
+    <section id="page-availability" class="page">
+      <div class="section-title">Check Availability</div>
+      <div class="form-card" style="margin-bottom:1.5rem">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Facility</label>
+            <select id="avail-facility" onchange="checkAvailability()">
+              <option value="">Select facility…</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="avail-date" onchange="checkAvailability()"/>
+          </div>
+        </div>
+      </div>
+      <div id="avail-result"></div>
+    </section>
+
+    <!-- My Bookings -->
+    <section id="page-bookings" class="page">
+      <div class="page-header">
+        <div class="section-title" id="my-bookings-label">My Bookings</div>
+        <button class="btn btn-gold btn-sm" onclick="showPage('new-booking')">➕ New Booking</button>
+      </div>
+      <div class="table-wrap" id="my-bookings-table"></div>
+    </section>
+
+    <!-- All Bookings (admin / staff) -->
+    <section id="page-all-bookings" class="page">
+      <div class="page-header">
+        <div class="section-title">All Bookings <span id="all-bookings-count" style="font-size:.9rem;font-weight:400;color:var(--gray)"></span></div>
+        <input class="search-bar" type="text" id="all-bookings-search" placeholder="Search facility, user, status…" oninput="filterAllBookings()"/>
+      </div>
+      <div class="table-wrap" id="all-bookings-table"></div>
+    </section>
+
+    <!-- New Booking -->
+    <section id="page-new-booking" class="page">
+      <div class="section-title">New Booking</div>
+      <div class="form-card">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Facility</label>
+            <select id="nb-facility" onchange="onNbFacilityChange()">
+              <option value="">Select facility…</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="nb-date" onchange="onNbDateChange()"/>
+          </div>
+        </div>
+
+        <div id="nb-slots-section" style="display:none;margin-bottom:1.25rem">
+          <div class="form-group"><label>Pick a 30-minute slot</label></div>
+          <div class="avail-grid" id="nb-slot-grid"></div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start time</label>
+            <input type="time" id="nb-start" step="1800"/>
+          </div>
+          <div class="form-group">
+            <label>End time</label>
+            <input type="time" id="nb-end" step="1800"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Booking for</label>
+            <input type="text" id="nb-user-display" readonly/>
+            <input type="hidden" id="nb-user-id"/>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="nb-status">
+              <option value="confirmed">Confirmed</option>
+              <option value="pending">Pending</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="submitBooking()">Confirm Booking</button>
+      </div>
+    </section>
+
+  </main>
+</div><!-- end app-shell -->
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="update-modal">
+  <div class="modal">
+    <div class="modal-title">Edit Booking</div>
+    <input type="hidden" id="edit-id"/>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="edit-date"/>
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="edit-status">
+          <option value="confirmed">Confirmed</option>
+          <option value="pending">Pending</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Start time</label>
+        <input type="time" id="edit-start"/>
+      </div>
+      <div class="form-group">
+        <label>End time</label>
+        <input type="time" id="edit-end"/>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('update-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveUpdate()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   Constants & State
+═══════════════════════════════════════════════════════════════════════════ */
+const API = '/api';
+let facilities   = [];
+let allBookings  = [];
+let allUsers     = [];
+let currentUser  = null;
+let authToken    = null;
+let selectedSlotStart = null;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Utils
+═══════════════════════════════════════════════════════════════════════════ */
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+  const res = await fetch(API + path, { headers, ...opts });
+  return res.json();
+}
+
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  const icon = type === 'success' ? '✔' : type === 'error' ? '✖' : 'ℹ';
+  el.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+function fmt12(t) {
+  if (!t) return '';
+  const [h, m] = t.split(':').map(Number);
+  return `${((h%12)||12)}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`;
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  return new Date(d + 'T00:00').toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+}
+
+function badgeStatus(s) {
+  return `<span class="badge badge-${s}">${s.toUpperCase()}</span>`;
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open') }
+function closeModal(id) { document.getElementById(id).classList.remove('open') }
+
+function initials(name) {
+  return (name || '?').split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Auth UI helpers
+═══════════════════════════════════════════════════════════════════════════ */
+function showAuthPage(page) {
+  document.getElementById('login-form').style.display  = page === 'login'  ? '' : 'none';
+  document.getElementById('signup-form').style.display = page === 'signup' ? '' : 'none';
+  clearAuthErrors();
+}
+
+function clearAuthErrors() {
+  ['login-error','signup-error','signup-success'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('visible');
+    el.textContent = '';
+  });
+}
+
+function showAuthError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+
+function togglePw(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (input.type === 'password') { input.type = 'text';  btn.textContent = 'Hide'; }
+  else                           { input.type = 'password'; btn.textContent = 'Show'; }
+}
+
+function selectRole(pill) {
+  document.querySelectorAll('.role-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  document.getElementById('signup-role').value = pill.dataset.role;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Auth Actions
+═══════════════════════════════════════════════════════════════════════════ */
+async function doLogin() {
+  clearAuthErrors();
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+
+  if (!email || !password) { showAuthError('login-error', 'Please enter email and password.'); return; }
+
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+
+  try {
+    const res = await fetch(API + '/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      authToken   = data.token;
+      currentUser = data.user;
+      sessionStorage.setItem('token', authToken);
+      sessionStorage.setItem('user',  JSON.stringify(currentUser));
+      enterApp();
+    } else {
+      showAuthError('login-error', data.error || 'Login failed. Please try again.');
+    }
+  } catch(e) {
+    showAuthError('login-error', 'Connection error. Is the server running?');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+async function doSignup() {
+  clearAuthErrors();
+  const name     = document.getElementById('signup-name').value.trim();
+  const email    = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const confirm  = document.getElementById('signup-confirm').value;
+  const role     = document.getElementById('signup-role').value;
+
+  if (!name || !email || !password) { showAuthError('signup-error', 'All fields are required.'); return; }
+  if (password !== confirm)          { showAuthError('signup-error', 'Passwords do not match.'); return; }
+  if (password.length < 6)           { showAuthError('signup-error', 'Password must be at least 6 characters.'); return; }
+
+  const btn = document.getElementById('signup-btn');
+  btn.disabled = true; btn.textContent = 'Creating account…';
+
+  try {
+    const res = await fetch(API + '/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password, role })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      authToken   = data.token;
+      currentUser = data.user;
+      sessionStorage.setItem('token', authToken);
+      sessionStorage.setItem('user',  JSON.stringify(currentUser));
+      toast(`Welcome, ${currentUser.name}! 🎉`, 'success');
+      enterApp();
+    } else {
+      const msg = data.error || (data.errors && data.errors.join(', ')) || 'Signup failed.';
+      showAuthError('signup-error', msg);
+    }
+  } catch(e) {
+    showAuthError('signup-error', 'Connection error. Is the server running?');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+}
+
+async function doLogout() {
+  try { await api('/auth/logout', { method: 'POST' }); } catch(e) {}
+  authToken = null; currentUser = null;
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('user');
+  document.getElementById('app-shell').classList.remove('visible');
+  document.getElementById('auth-shell').classList.remove('hidden');
+  showAuthPage('login');
+  // clear fields
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-password').value = '';
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   App Entry
+═══════════════════════════════════════════════════════════════════════════ */
+function enterApp() {
+  document.getElementById('auth-shell').classList.add('hidden');
+  document.getElementById('app-shell').classList.add('visible');
+  renderUserChip();
+  // Hide "All Bookings" tab for plain students
+  const tabAll = document.getElementById('tab-all-bookings');
+  if (currentUser.role === 'student') tabAll.style.display = 'none';
+  else tabAll.style.display = '';
+  initApp();
+}
+
+function renderUserChip() {
+  document.getElementById('user-avatar-initials').textContent = initials(currentUser.name);
+  document.getElementById('user-chip-name').textContent       = currentUser.name;
+  const roleEl = document.getElementById('user-chip-role');
+  roleEl.textContent  = currentUser.role;
+  roleEl.className    = `badge-role ${currentUser.role}`;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Navigation
+═══════════════════════════════════════════════════════════════════════════ */
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const map = { facilities:0, availability:1, bookings:2, 'all-bookings':3, 'new-booking':4 };
+  const tabs = document.querySelectorAll('.nav-tab');
+  if (map[name] !== undefined) tabs[map[name]].classList.add('active');
+  if (name === 'bookings')     loadMyBookings();
+  if (name === 'all-bookings') loadAllBookings();
+  if (name === 'new-booking')  setupNewBooking();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Users
+═══════════════════════════════════════════════════════════════════════════ */
+async function loadUsers() {
+  const data = await api('/users');
+  allUsers = data.data || [];
+}
+
+function updateUserDisplay() {
+  const el = document.getElementById('nb-user-display');
+  if (el && currentUser) {
+    el.value = `${currentUser.name} <${currentUser.email}>`;
+    document.getElementById('nb-user-id').value = currentUser.id;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Facilities
+═══════════════════════════════════════════════════════════════════════════ */
+async function loadFacilities() {
+  const data = await api('/facilities');
+  facilities = data.data || [];
+  renderFacilityGrid();
+  renderStats();
+  populateFacilitySelects();
+}
+
+function renderStats() {
+  const confirmed = allBookings.filter(b => b.status === 'confirmed').length;
+  const pending   = allBookings.filter(b => b.status === 'pending').length;
+  const mine      = allBookings.filter(b => b.user_id == currentUser?.id).length;
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card"><div class="stat-value">${facilities.length}</div><div class="stat-label">Facilities</div></div>
+    <div class="stat-card" style="border-color:var(--green)"><div class="stat-value">${confirmed}</div><div class="stat-label">Confirmed Bookings</div></div>
+    <div class="stat-card" style="border-color:var(--orange)"><div class="stat-value">${pending}</div><div class="stat-label">Pending Bookings</div></div>
+    <div class="stat-card" style="border-color:var(--navy3)"><div class="stat-value">${mine}</div><div class="stat-label">My Bookings</div></div>
+  `;
+}
+
+const icons = ['🏛','🎓','💻','📝','⚽','📚'];
+function renderFacilityGrid() {
+  const el = document.getElementById('facilities-grid');
+  if (!facilities.length) { el.innerHTML = '<div class="empty-state"><p>No facilities found.</p></div>'; return; }
+  el.innerHTML = facilities.map((f, i) => `
+    <div class="card">
+      <div class="card-banner"></div>
+      <div class="card-body">
+        <div class="card-icon">${icons[i % icons.length]}</div>
+        <div class="card-title">${f.name}</div>
+        <div class="card-sub">📍 ${f.location}</div>
+        <div class="card-meta">
+          <span class="tag">👥 Cap: ${f.capacity}</span>
+          <span class="tag gold">ID: ${f.id}</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-outline btn-sm" onclick="quickAvailability(${f.id})">Check Slots</button>
+        <button class="btn btn-gold btn-sm"    onclick="quickBook(${f.id})">Book Now</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function quickAvailability(fid) {
+  document.getElementById('avail-facility').value = fid;
+  document.getElementById('avail-date').value = new Date().toISOString().split('T')[0];
+  showPage('availability');
+  checkAvailability();
+}
+function quickBook(fid) {
+  document.getElementById('nb-facility').value = fid;
+  document.getElementById('nb-date').value = new Date().toISOString().split('T')[0];
+  showPage('new-booking');
+  onNbFacilityChange();
+}
+function populateFacilitySelects() {
+  const opts = facilities.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+  ['avail-facility','nb-facility'].forEach(id => {
+    document.getElementById(id).innerHTML = `<option value="">Select facility…</option>` + opts;
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Availability
+═══════════════════════════════════════════════════════════════════════════ */
+async function checkAvailability() {
+  const fid  = document.getElementById('avail-facility').value;
+  const date = document.getElementById('avail-date').value;
+  if (!fid || !date) return;
+  const el = document.getElementById('avail-result');
+  el.innerHTML = '<div class="loading">Loading slots…</div>';
+  const data = await api(`/availability?facility_id=${fid}&date=${date}`);
+  if (!data.success) { el.innerHTML = `<div class="empty-state"><p>${data.error||'Error'}</p></div>`; return; }
+  const { facility, slots, summary } = data;
+  el.innerHTML = `
+    <div class="form-card">
+      <h3 style="font-family:var(--font-serif);font-size:1.2rem;margin-bottom:.25rem">${facility.name}</h3>
+      <div style="color:var(--gray);font-size:.83rem;margin-bottom:1rem">📍 ${facility.location} · 📅 ${fmtDate(date)}</div>
+      <div class="summary-bar">
+        <div>🟢 Available <span>${summary.available}</span></div>
+        <div>🔴 Booked <span>${summary.booked}</span></div>
+        <div>Total <span>${summary.total}</span></div>
+      </div>
+      <div class="avail-legend">
+        <div><span class="legend-dot" style="background:rgba(46,125,82,.2);border:1px solid rgba(46,125,82,.4)"></span>Available — click to book</div>
+        <div><span class="legend-dot" style="background:rgba(181,55,58,.1);border:1px solid rgba(181,55,58,.25)"></span>Booked</div>
+      </div>
+      <div class="avail-grid" style="margin-top:1rem">
+        ${slots.map(s => `
+          <div class="slot ${s.available ? 'available' : 'booked'}"
+               ${s.available ? `onclick="slotToBooking('${facility.id}','${date}','${s.start_time}','${s.end_time}')"` : ''}
+               title="${s.available ? 'Click to book' : 'Slot taken'}">
+            <div>${fmt12(s.start_time)}</div>
+            <div style="font-size:.7rem;opacity:.7">${s.available ? '✓ Free' : '✗ Taken'}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+}
+
+function slotToBooking(fid, date, start, end) {
+  document.getElementById('nb-facility').value = fid;
+  document.getElementById('nb-date').value     = date;
+  document.getElementById('nb-start').value    = start;
+  document.getElementById('nb-end').value      = end;
+  showPage('new-booking');
+  toast('Slot pre-filled — confirm booking below.', 'info');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   New Booking
+═══════════════════════════════════════════════════════════════════════════ */
+function setupNewBooking() {
+  updateUserDisplay();
+  const fid  = document.getElementById('nb-facility').value;
+  const date = document.getElementById('nb-date').value;
+  if (fid && date) loadNbSlots(fid, date);
+}
+
+async function onNbFacilityChange() {
+  const fid  = document.getElementById('nb-facility').value;
+  const date = document.getElementById('nb-date').value;
+  if (fid && date) loadNbSlots(fid, date);
+}
+async function onNbDateChange() {
+  const fid  = document.getElementById('nb-facility').value;
+  const date = document.getElementById('nb-date').value;
+  if (fid && date) loadNbSlots(fid, date);
+}
+async function loadNbSlots(fid, date) {
+  const data = await api(`/availability?facility_id=${fid}&date=${date}`);
+  if (!data.success) return;
+  const section = document.getElementById('nb-slots-section');
+  section.style.display = 'block';
+  document.getElementById('nb-slot-grid').innerHTML = data.slots.map(s => `
+    <div class="slot ${s.available ? 'available' : 'booked'} ${selectedSlotStart === s.start_time ? 'selected' : ''}"
+         ${s.available ? `onclick="selectNbSlot('${s.start_time}','${s.end_time}')"` : ''}
+         title="${s.available ? s.start_time+' – '+s.end_time : 'Already booked'}">
+      <div>${fmt12(s.start_time)}</div>
+    </div>
+  `).join('');
+}
+function selectNbSlot(start, end) {
+  selectedSlotStart = start;
+  document.getElementById('nb-start').value = start;
+  document.getElementById('nb-end').value   = end;
+  const fid  = document.getElementById('nb-facility').value;
+  const date = document.getElementById('nb-date').value;
+  loadNbSlots(fid, date);
+}
+async function submitBooking() {
+  const fid   = document.getElementById('nb-facility').value;
+  const uid   = document.getElementById('nb-user-id').value;
+  const date  = document.getElementById('nb-date').value;
+  const start = document.getElementById('nb-start').value;
+  const end   = document.getElementById('nb-end').value;
+  const status= document.getElementById('nb-status').value;
+  if (!fid || !uid || !date || !start || !end) { toast('Please fill in all fields.', 'error'); return; }
+  if (start >= end) { toast('End time must be after start time.', 'error'); return; }
+  const res = await api('/bookings', {
+    method: 'POST',
+    body: JSON.stringify({ facility_id: +fid, user_id: +uid, date, start_time: start, end_time: end, status })
+  });
+  if (res.success) {
+    toast('Booking confirmed! 🎉', 'success');
+    selectedSlotStart = null;
+    document.getElementById('nb-date').value  = '';
+    document.getElementById('nb-start').value = '';
+    document.getElementById('nb-end').value   = '';
+    document.getElementById('nb-slots-section').style.display = 'none';
+    allBookings = (await api('/bookings')).data || [];
+    renderStats();
+    showPage('bookings');
+  } else {
+    toast(res.error || 'Booking failed', 'error');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   My Bookings
+═══════════════════════════════════════════════════════════════════════════ */
+async function loadMyBookings() {
+  if (!currentUser) return;
+  const data = await api('/bookings');
+  allBookings = data.data || [];
+  const mine = allBookings.filter(b => b.user_id == currentUser.id);
+  document.getElementById('my-bookings-label').innerHTML =
+    `My Bookings <span style="font-size:.9rem;font-weight:400;color:var(--gray)">(${mine.length})</span>`;
+  const el = document.getElementById('my-bookings-table');
+  if (!mine.length) {
+    el.innerHTML = `<div class="empty-state"><p>No bookings yet. <a href="#" onclick="showPage('new-booking')" style="color:var(--gold);font-weight:600">Create one →</a></p></div>`;
+    return;
+  }
+  el.innerHTML = `
+    <table><thead><tr>
+      <th>Facility</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th>
+    </tr></thead><tbody>
+      ${mine.map(b => `
+        <tr>
+          <td><strong>${b.facility_name}</strong><br><span style="font-size:.77rem;color:var(--gray)">${b.facility_location}</span></td>
+          <td>${fmtDate(b.date)}</td>
+          <td style="white-space:nowrap">${fmt12(b.start_time)} – ${fmt12(b.end_time)}</td>
+          <td>${badgeStatus(b.status)}</td>
+          <td>
+            ${b.status !== 'cancelled' ? `
+              <button class="btn btn-outline btn-sm" onclick="editBooking(${b.id})">Edit</button>
+              <button class="btn btn-danger btn-sm"  onclick="cancelBooking(${b.id})">Cancel</button>
+            ` : '<span style="color:var(--gray);font-size:.8rem">–</span>'}
+          </td>
+        </tr>
+      `).join('')}
+    </tbody></table>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   All Bookings
+═══════════════════════════════════════════════════════════════════════════ */
+async function loadAllBookings() {
+  const data = await api('/bookings');
+  allBookings = data.data || [];
+  renderAllBookings(allBookings);
+}
+function renderAllBookings(list) {
+  document.getElementById('all-bookings-count').textContent = `${list.length} booking(s)`;
+  const el = document.getElementById('all-bookings-table');
+  if (!list.length) { el.innerHTML = `<div class="empty-state"><p>No bookings found.</p></div>`; return; }
+  el.innerHTML = `
+    <table><thead><tr>
+      <th>#</th><th>Facility</th><th>User</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th>
+    </tr></thead><tbody>
+      ${list.map(b => `
+        <tr>
+          <td style="color:var(--gray);font-size:.8rem">${b.id}</td>
+          <td><strong>${b.facility_name}</strong></td>
+          <td>${b.user_name}<br><span style="font-size:.73rem;color:var(--gray)">${b.user_email}</span></td>
+          <td>${fmtDate(b.date)}</td>
+          <td style="white-space:nowrap">${fmt12(b.start_time)} – ${fmt12(b.end_time)}</td>
+          <td>${badgeStatus(b.status)}</td>
+          <td>
+            <button class="btn btn-outline btn-sm" onclick="editBooking(${b.id})">Edit</button>
+            <button class="btn btn-danger btn-sm"  onclick="cancelBooking(${b.id})">Cancel</button>
+          </td>
+        </tr>
+      `).join('')}
+    </tbody></table>`;
+}
+function filterAllBookings() {
+  const q = document.getElementById('all-bookings-search').value.toLowerCase();
+  renderAllBookings(allBookings.filter(b =>
+    b.facility_name.toLowerCase().includes(q) ||
+    b.user_name.toLowerCase().includes(q) ||
+    b.user_email.toLowerCase().includes(q) ||
+    b.status.includes(q)
+  ));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Edit / Cancel
+═══════════════════════════════════════════════════════════════════════════ */
+function editBooking(id) {
+  const b = allBookings.find(x => x.id == id);
+  if (!b) return;
+  document.getElementById('edit-id').value     = id;
+  document.getElementById('edit-date').value   = b.date;
+  document.getElementById('edit-start').value  = b.start_time;
+  document.getElementById('edit-end').value    = b.end_time;
+  document.getElementById('edit-status').value = b.status;
+  openModal('update-modal');
+}
+async function saveUpdate() {
+  const id     = document.getElementById('edit-id').value;
+  const date   = document.getElementById('edit-date').value;
+  const start  = document.getElementById('edit-start').value;
+  const end    = document.getElementById('edit-end').value;
+  const status = document.getElementById('edit-status').value;
+  const existing = allBookings.find(b => b.id == id);
+  const res = await api(`/bookings/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({ facility_id: existing.facility_id, user_id: existing.user_id, date, start_time: start, end_time: end, status })
+  });
+  if (res.success) {
+    toast('Booking updated! ✔', 'success');
+    closeModal('update-modal');
+    allBookings = (await api('/bookings')).data || [];
+    if (document.getElementById('page-bookings').classList.contains('active')) loadMyBookings();
+    else renderAllBookings(allBookings);
+    renderStats();
+  } else {
+    toast(res.error || 'Update failed', 'error');
+  }
+}
+async function cancelBooking(id) {
+  if (!confirm('Cancel this booking?')) return;
+  const res = await api(`/bookings/${id}`, { method: 'DELETE' });
+  if (res.success) {
+    toast('Booking cancelled.', 'info');
+    allBookings = (await api('/bookings')).data || [];
+    if (document.getElementById('page-bookings').classList.contains('active')) loadMyBookings();
+    else renderAllBookings(allBookings);
+    renderStats();
+  } else {
+    toast(res.error || 'Could not cancel.', 'error');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   App Init (after login)
+═══════════════════════════════════════════════════════════════════════════ */
+async function initApp() {
+  showPage('facilities');
+  await loadUsers();
+  const bData = await api('/bookings');
+  allBookings = bData.data || [];
+  await loadFacilities();
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('avail-date').value = today;
+  document.getElementById('nb-date').value    = today;
+  updateUserDisplay();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Bootstrap — check for saved session
+═══════════════════════════════════════════════════════════════════════════ */
+(async function bootstrap() {
+  const savedToken = sessionStorage.getItem('token');
+  const savedUser  = sessionStorage.getItem('user');
+  if (savedToken && savedUser) {
+    authToken   = savedToken;
+    currentUser = JSON.parse(savedUser);
+    // Verify token is still valid
+    try {
+      const check = await fetch(API + '/auth/me', {
+        headers: { 'Authorization': `Bearer ${savedToken}` }
+      });
+      const data = await check.json();
+      if (data.success) {
+        currentUser = data.user;
+        enterApp();
+        return;
+      }
+    } catch(e) {}
+    // Token invalid — clear and show login
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+  }
+  // Show login screen
+  document.getElementById('auth-shell').classList.remove('hidden');
+})();
+
+// Allow Enter key on login/signup
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (document.getElementById('login-form').style.display !== 'none') doLogin();
+  else if (document.getElementById('signup-form').style.display !== 'none') doSignup();
+});
+</script>
+</body>
+</html>
