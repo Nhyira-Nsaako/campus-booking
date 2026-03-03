@@ -161,7 +161,6 @@ body{font-family:var(--font-sans);background:var(--cream);color:var(--navy);min-
 }
 .role-pill.active{border-color:var(--gold);background:rgba(201,168,76,.1);color:var(--navy)}
 
-
 /* ── MAIN APP ─────────────────────────────────────────────────────────── */
 #app-shell{display:none;flex-direction:column;min-height:100vh}
 #app-shell.visible{display:flex}
@@ -347,6 +346,28 @@ tbody tr:hover{background:var(--light)}
 .toast.info{background:var(--navy)}
 @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
 
+/* ── CONFIRM DIALOG ── */
+.confirm-overlay{
+  position:fixed;inset:0;background:rgba(11,31,58,.6);
+  backdrop-filter:blur(4px);z-index:500;
+  display:flex;align-items:center;justify-content:center;
+  animation:fadeIn .2s ease;
+}
+.confirm-box{
+  background:var(--white);border-radius:var(--radius);
+  padding:2rem;max-width:400px;width:90%;
+  box-shadow:var(--shadow-lg);animation:popIn .2s ease;
+}
+.confirm-icon{font-size:2.5rem;text-align:center;margin-bottom:1rem}
+.confirm-title{
+  font-family:var(--font-serif);font-size:1.4rem;font-weight:700;
+  color:var(--navy);text-align:center;margin-bottom:.5rem;
+}
+.confirm-msg{color:var(--gray);font-size:.88rem;text-align:center;line-height:1.6;margin-bottom:1.5rem}
+.confirm-actions{display:flex;gap:.75rem;justify-content:center}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+
 /* ── MISC ── */
 .empty-state{text-align:center;padding:3rem 1rem;color:var(--gray)}
 .empty-state p{font-size:.95rem}
@@ -393,7 +414,6 @@ tbody tr:hover{background:var(--light)}
       <div class="auth-form-title">Welcome back</div>
       <div class="auth-form-sub">Sign in to your UG account to continue</div>
 
-      
       <div class="auth-error" id="login-error"></div>
 
       <div class="field">
@@ -707,6 +727,32 @@ function initials(name) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   Confirm Dialog
+═══════════════════════════════════════════════════════════════════════════ */
+function confirmDialog(title, msg, confirmLabel, type = 'primary') {
+  return new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.className = 'confirm-overlay';
+    const icon = type === 'danger' ? '⚠️' : '✏️';
+    const btnClass = type === 'danger' ? 'btn-danger' : 'btn-primary';
+    overlay.innerHTML = `
+      <div class="confirm-box">
+        <div class="confirm-icon">${icon}</div>
+        <div class="confirm-title">${title}</div>
+        <div class="confirm-msg">${msg}</div>
+        <div class="confirm-actions">
+          <button class="btn btn-outline" id="confirm-no">No, Go Back</button>
+          <button class="btn ${btnClass}" id="confirm-yes">${confirmLabel}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#confirm-yes').onclick = () => { overlay.remove(); resolve(true); };
+    overlay.querySelector('#confirm-no').onclick  = () => { overlay.remove(); resolve(false); };
+    overlay.onclick = e => { if (e.target === overlay) { overlay.remove(); resolve(false); } };
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    Auth UI helpers
 ═══════════════════════════════════════════════════════════════════════════ */
 function showAuthPage(page) {
@@ -827,7 +873,6 @@ async function doLogout() {
   document.getElementById('app-shell').classList.remove('visible');
   document.getElementById('auth-shell').classList.remove('hidden');
   showAuthPage('login');
-  // clear fields
   document.getElementById('login-email').value = '';
   document.getElementById('login-password').value = '';
 }
@@ -839,7 +884,6 @@ function enterApp() {
   document.getElementById('auth-shell').classList.add('hidden');
   document.getElementById('app-shell').classList.add('visible');
   renderUserChip();
-  // Hide "All Bookings" tab for plain students
   const tabAll = document.getElementById('tab-all-bookings');
   if (currentUser.role === 'student') tabAll.style.display = 'none';
   else tabAll.style.display = '';
@@ -1158,7 +1202,9 @@ function editBooking(id) {
   document.getElementById('edit-status').value = b.status;
   openModal('update-modal');
 }
+
 async function saveUpdate() {
+  if (!await confirmDialog('Save Changes', 'Are you sure you want to update this booking?', 'Yes, Save Changes', 'primary')) return;
   const id     = document.getElementById('edit-id').value;
   const date   = document.getElementById('edit-date').value;
   const start  = document.getElementById('edit-start').value;
@@ -1180,8 +1226,9 @@ async function saveUpdate() {
     toast(res.error || 'Update failed', 'error');
   }
 }
+
 async function cancelBooking(id) {
-  if (!confirm('Cancel this booking?')) return;
+  if (!await confirmDialog('Cancel Booking', 'Are you sure you want to cancel this booking? This cannot be undone.', 'Yes, Cancel Booking', 'danger')) return;
   const res = await api(`/bookings/${id}`, { method: 'DELETE' });
   if (res.success) {
     toast('Booking cancelled.', 'info');
@@ -1218,7 +1265,6 @@ async function initApp() {
   if (savedToken && savedUser) {
     authToken   = savedToken;
     currentUser = JSON.parse(savedUser);
-    // Verify token is still valid
     try {
       const check = await fetch(API + '/auth/me', {
         headers: { 'Authorization': `Bearer ${savedToken}` }
@@ -1230,15 +1276,12 @@ async function initApp() {
         return;
       }
     } catch(e) {}
-    // Token invalid — clear and show login
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
   }
-  // Show login screen
   document.getElementById('auth-shell').classList.remove('hidden');
 })();
 
-// Allow Enter key on login/signup
 document.addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
   if (document.getElementById('login-form').style.display !== 'none') doLogin();
